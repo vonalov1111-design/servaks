@@ -1,0 +1,10 @@
+﻿{
+  "name": "servaks-rp",
+  "version": "1.0.0",
+  "description": "GTA V RP Server",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {}
+}

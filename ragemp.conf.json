@@ -1,0 +1,15 @@
+﻿{
+  "maxplayers": 50,
+  "name": "Servaks RP Server",
+  "gamemode": "freeroam",
+  "port": 22005,
+  "allow-cef": true,
+  "enable-http": false,
+  "voice-chat": true,
+  "voice-chat-sample-rate": 24000,
+  "encryption": false,
+  "sync-rate": 40,
+  "streaming-distance": 500,
+  "announce": false,
+  "nodejs": true
+}

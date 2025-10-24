@@ -1,0 +1,199 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servaks RP - Аутентификация</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Arial', sans-serif; 
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .auth-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 400px;
+            text-align: center;
+        }
+        .logo {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .tabs { 
+            display: flex; 
+            margin-bottom: 20px; 
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        .tab { 
+            flex: 1; 
+            padding: 10px; 
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .tab.active { 
+            border-bottom: 2px solid #4ecdc4; 
+            color: #4ecdc4;
+        }
+        .form-group { 
+            margin-bottom: 15px; 
+            text-align: left;
+        }
+        label { 
+            display: block; 
+            margin-bottom: 5px; 
+            color: #ccc;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        input:focus {
+            outline: none;
+            border-color: #4ecdc4;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        .error {
+            color: #ff6b6b;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="logo">SERVAKS RP</div>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('login')">ВХОД</div>
+            <div class="tab" onclick="showTab('register')">РЕГИСТРАЦИЯ</div>
+        </div>
+
+        <!-- Форма входа -->
+        <div id="login-form">
+            <div class="form-group">
+                <label>Логин</label>
+                <input type="text" id="login-username" placeholder="Введите логин">
+            </div>
+            <div class="form-group">
+                <label>Пароль</label>
+                <input type="password" id="login-password" placeholder="Введите пароль">
+            </div>
+            <button onclick="login()">ВОЙТИ</button>
+            <div class="error" id="login-error"></div>
+        </div>
+
+        <!-- Форма регистрации -->
+        <div id="register-form" style="display: none;">
+            <div class="form-group">
+                <label>Логин</label>
+                <input type="text" id="register-username" placeholder="Придумайте логин">
+            </div>
+            <div class="form-group">
+                <label>Пароль</label>
+                <input type="password" id="register-password" placeholder="Придумайте пароль">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="register-email" placeholder="Введите email">
+            </div>
+            <button onclick="register()">ЗАРЕГИСТРИРОВАТЬСЯ</button>
+            <div class="error" id="register-error"></div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('register-form').style.display = 'none';
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            
+            if (tabName === 'login') {
+                document.getElementById('login-form').style.display = 'block';
+                document.querySelectorAll('.tab')[0].classList.add('active');
+            } else {
+                document.getElementById('register-form').style.display = 'block';
+                document.querySelectorAll('.tab')[1].classList.add('active');
+            }
+        }
+
+        function login() {
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            const error = document.getElementById('login-error');
+            
+            if (!username || !password) {
+                error.textContent = 'Заполните все поля';
+                error.style.display = 'block';
+                return;
+            }
+            
+            // Отправляем данные в игровой клиент
+            if ('mp' in window) {
+                mp.trigger('auth:login', username, password);
+            }
+        }
+
+        function register() {
+            const username = document.getElementById('register-username').value;
+            const password = document.getElementById('register-password').value;
+            const email = document.getElementById('register-email').value;
+            const error = document.getElementById('register-error');
+            
+            if (!username || !password || !email) {
+                error.textContent = 'Заполните все поля';
+                error.style.display = 'block';
+                return;
+            }
+            
+            // Отправляем данные в игровой клиент
+            if ('mp' in window) {
+                mp.trigger('auth:register', username, password, email);
+            }
+        }
+
+        // Функции для взаимодействия с сервером
+        window.authSuccess = function() {
+            document.querySelector('.auth-container').style.opacity = '0';
+            setTimeout(() => {
+                document.body.innerHTML = '<div style="display:flex;justify-content:center;align-items:center;height:100vh;color:white;font-size:24px;">Загрузка мира...</div>';
+            }, 500);
+        }
+
+        window.authFailed = function(message) {
+            const error = document.getElementById('login-error');
+            error.textContent = message;
+            error.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
